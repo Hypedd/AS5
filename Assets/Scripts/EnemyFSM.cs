@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class EnemyFSM : MonoBehaviour
 {
-    public enum EnemyState{GoToBase, AttackBase, ChasePlayer, AttackPlayer}
+    public enum EnemyState{GoToBase, AttackBase, LookPlayer, AttackPlayer}
     public EnemyState currentState;
     public Sight sightSensor;
     public Transform baseTransform;
@@ -32,7 +32,7 @@ public class EnemyFSM : MonoBehaviour
     {
         if(currentState==EnemyState.GoToBase){GoToBase();}
         else if(currentState==EnemyState.AttackBase){AttackBase();}
-        else if (currentState == EnemyState.ChasePlayer) { ChasePlayer(); }
+        else if (currentState == EnemyState.LookPlayer) { LookPlayer(); }
         else{AttackPlayer();}
 
     }
@@ -43,7 +43,7 @@ public class EnemyFSM : MonoBehaviour
 
         if (sightSensor.detectedObject!=null)
         {
-            currentState=EnemyState.ChasePlayer;
+            currentState=EnemyState.LookPlayer;
         }
 
         float distanceToBase=Vector3.Distance(transform.position, baseTransform.position);
@@ -63,7 +63,7 @@ public class EnemyFSM : MonoBehaviour
         Shoot();
 
     }
-    void ChasePlayer() 
+    void LookPlayer() 
     {
         agent.isStopped = false;
 
@@ -80,7 +80,7 @@ public class EnemyFSM : MonoBehaviour
             currentState=EnemyState.AttackPlayer;
         }
 
-        agent.SetDestination(sightSensor.detectedObject.transform.position);
+        agent.SetDestination(baseTransform.position);
 
     }
     void AttackPlayer() 
@@ -98,9 +98,9 @@ public class EnemyFSM : MonoBehaviour
 
         float distanceToPlayer = Vector3.Distance(transform.position, sightSensor.detectedObject.transform.position);
 
-        if(distanceToPlayer>playerAttackDistance*1.1f)
+        if(distanceToPlayer>playerAttackDistance*1.2f)
         {
-            currentState=EnemyState.ChasePlayer;
+            currentState=EnemyState.LookPlayer;
         }
 
     }
